@@ -1,0 +1,33 @@
+// Create a function to handle notification creation and display
+function showNotification(title, body, icon) {
+  // Check if desktop notifications are supported
+  if (!("Notification" in window)) {
+    console.log("This browser does not support desktop notifications.");
+  } else if (Notification.permission === "granted") {
+    // If permissions are already granted, create and show the notification
+    var notification = new Notification(title, { body: body, icon: icon });
+  } else if (Notification.permission !== "denied") {
+    // If permissions are not yet granted, request them
+    Notification.requestPermission(function (permission) {
+      if (permission === "granted") {
+        var notification = new Notification(title, { body: body, icon: icon });
+      }
+    });
+  }
+}
+
+// Add a listener to receive notifications from the page
+window.addEventListener("message", receiveMessage, false);
+function receiveMessage(event) {
+  // Check that the message is coming from the correct domain
+  if (event.origin !== "https://www.your-domain.com") {
+    return;
+  }
+  // Extract the notification data from the message
+  var data = event.data;
+  var title = data.title;
+  var body = data.body;
+  var icon = data.icon;
+  // Show the notification
+  showNotification(title, body, icon);
+}
